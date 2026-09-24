@@ -235,14 +235,17 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      # 用 action 下载预编译的 goreleaser, 避免 go install 把 goreleaser 自身的
+      # Go 版本要求带进来: v2.12.5 要求 Go >= 1.25.1, 而本项目的 go.mod 是 1.24.
+      # 这样各 job 的工具链保持一致, 归档与 deb/rpm 由同一个 Go 版本产出.
       - name: 用 goreleaser 生成 deb 与 rpm 包
-        shell: bash
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          version: "v2.12.5"
+          args: release --clean
         env:
           PROJECT_BUILD_VERSION: v${{ needs.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          go install github.com/goreleaser/goreleaser/v2@v2.12.5
-          "$(go env GOPATH)/bin/goreleaser" release --clean
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: 上传分发包
         uses: actions/upload-artifact@v7
