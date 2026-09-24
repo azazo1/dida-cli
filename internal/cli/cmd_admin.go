@@ -159,8 +159,8 @@ func (rt *Runtime) attachConfig(root *cobra.Command) {
 		operation:  schema.OpRead,
 		positional: []schema.Param{{Name: "key", Required: true, Description: "配置项名"}},
 		examples:   []string{"dida config get read_only"},
-		run: func(rt *Runtime, _ *cobra.Command, args map[string]any) error {
-			key := stringArg(args, "key")
+		run: func(rt *Runtime, cmd *cobra.Command, _ map[string]any) error {
+			key := cmdPositional(cmd, 0)
 			field, err := config.FindField(key)
 			if err != nil {
 				return err
@@ -187,10 +187,10 @@ func (rt *Runtime) attachConfig(root *cobra.Command) {
 			"dida config set non_destructive true",
 			"dida config set timezone Asia/Shanghai",
 		},
-		run: func(rt *Runtime, _ *cobra.Command, args map[string]any) error {
+		run: func(rt *Runtime, cmd *cobra.Command, _ map[string]any) error {
 			started := time.Now()
-			key := stringArg(args, "key")
-			value := stringArg(args, "value")
+			key := cmdPositional(cmd, 0)
+			value := cmdPositional(cmd, 1)
 			field, err := config.FindField(key)
 			if err != nil {
 				return err
