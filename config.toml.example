@@ -1,0 +1,41 @@
+# dida 配置文件示例
+#
+# 把本文件复制到配置目录并改名为 config.toml 即可生效.
+# 配置目录默认为 ~/.config/dida-cli, 可用环境变量 DIDA_CONFIG_DIR 覆盖.
+#
+# 所有配置项都可以用 dida config list 查看, 用 dida config set 修改.
+
+# 配置文件版本号, 由程序维护, 不要手工修改.
+# 程序会在版本升级时按 migration 自动迁移旧配置.
+version = 1
+
+# 只读模式. 开启后拒绝一切对账户的写操作, 命令行无法覆盖.
+# 来源可以是本项, 环境变量 DIDA_READ_ONLY=1, 或参数 --read-only, 任一为真即生效.
+read_only = false
+
+# 非破坏性模式. 开启后拒绝删除类操作, 但允许创建与更新.
+# 来源可以是本项, 环境变量 DIDA_NON_DESTRUCTIVE=1, 或参数 --non-destructive.
+non_destructive = false
+
+# 官方 MCP 端点地址. 一般不需要修改.
+endpoint = "https://mcp.dida365.com"
+
+# 未显式指定清单时使用的清单 id. 留空表示使用收集箱 inbox.
+default_project = ""
+
+# 日期解析与展示使用的时区, 取 IANA 名称, 例如 Asia/Shanghai.
+# 留空表示跟随系统时区.
+timezone = ""
+
+# 单次上游请求的超时秒数.
+request_timeout_seconds = 60
+
+# 是否缓存工具目录. 工具目录变化很慢, 缓存可以省掉重复的往返请求.
+cache_enabled = true
+
+# 缓存存活秒数.
+cache_ttl_seconds = 300
+
+# 默认日志级别, 取值为 debug / info / warn / error.
+# 日志只写 stderr, 不会污染 stdout 的 JSON 输出.
+log_level = "info"

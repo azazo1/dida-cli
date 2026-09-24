@@ -1,0 +1,80 @@
+# goreleaser 负责分发渠道产物: deb / rpm 包, 以及后续可启用的 brew / scoop 清单.
+#
+# 各平台的归档由 CI 的 build 矩阵用 scripts/dist.sh 在原生 runner 上产出,
+# 版本号与 release notes 的治理见 scripts/build-version.sh 与 docs/changelog.
+version: 2
+
+project_name: dida
+
+# release notes 以 docs/changelog/<version>.md 为唯一来源, 因此关掉自动 changelog.
+changelog:
+  disable: true
+
+builds:
+  - id: dida
+    main: ./cmd/dida
+    binary: dida
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    # 版本号由 CI 通过环境变量注入, 与 scripts/dist.sh 使用同一份取值.
+    ldflags:
+      - -s -w -X main.version={{ .Env.PROJECT_BUILD_VERSION }}
+
+archives:
+  - id: dida
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: >-
+      dida-{{ .Version }}-
+      {{- if eq .Os "darwin" }}macos{{ else }}{{ .Os }}{{ end }}-
+      {{- if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "arm64" }}aarch64{{ else }}{{ .Arch }}{{ end }}
+    files:
+      - LICENSE
+      - README.md
+
+# 校验和由 release job 统一对全部发布文件生成, 避免出现两份来源不同的校验和.
+checksum:
+  disable: true
+
+# 分发渠道产物. 需要时取消注释即可启用, 注意这会改变发布文件的数量,
+# 对应 workflow 里的计数也要同步调整.
+nfpms:
+  - id: dida
+    package_name: dida
+    vendor: azazo1
+    homepage: https://github.com/azazo1/dida-cli
+    maintainer: azazo1
+    description: 面向 agent 的滴答清单命令行工具
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+
+# brews:
+#   - repository:
+#       owner: azazo1
+#       name: homebrew-tap
+#     directory: Formula
+#     homepage: https://github.com/azazo1/dida-cli
+#     description: 面向 agent 的滴答清单命令行工具
+#     license: MIT
+#     install: |
+#       bin.install "dida"
+#     test: |
+#       system "#{bin}/dida", "version"
+
+release:
+  # 发布由 workflow 用 gh CLI 完成, goreleaser 只产出文件.
+  disable: true
