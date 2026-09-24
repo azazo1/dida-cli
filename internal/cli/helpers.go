@@ -33,12 +33,6 @@ func intArg(args map[string]any, key string) (int, bool) {
 	}
 }
 
-// boolArg 从请求体里取布尔参数.
-func boolArg(args map[string]any, key string) (bool, bool) {
-	value, ok := args[key].(bool)
-	return value, ok
-}
-
 // stringListArg 从请求体里取字符串列表参数.
 func stringListArg(args map[string]any, key string) []string {
 	switch value := args[key].(type) {
@@ -55,12 +49,6 @@ func stringListArg(args map[string]any, key string) []string {
 	default:
 		return nil
 	}
-}
-
-// mapArg 从请求体里取嵌套对象参数.
-func mapArg(args map[string]any, key string) map[string]any {
-	value, _ := args[key].(map[string]any)
-	return value
 }
 
 // envToken 返回环境变量里的口令.
